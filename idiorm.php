@@ -1125,6 +1125,27 @@
         }
 
         /**
+         * Update many records from the database
+         */
+        public function update_many($key, $value) {
+            // Build and return the full DELETE statement by concatenating
+            // the results of calling each separate builder method.
+            $query = $this->_join_if_not_empty(" ", array(
+                "UPDATE",
+                $this->_quote_identifier($this->_table_name),
+                "SET",
+                $this->_quote_identifier($key),
+                "= ?",
+                $this->_build_where(),
+            ));
+            $params = array($value);
+            $this->_values = array_merge($params, $this->_values);
+            self::_log_query($query, $params);
+            $statement = self::$_db->prepare($query);
+            return $statement->execute($this->_values);
+        }
+
+        /**
          * Delete many records from the database
          */
         public function delete_many() {
